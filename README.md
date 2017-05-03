@@ -1,3 +1,2 @@
 # Java
-* Java Note
-* test push
+* java笔记
