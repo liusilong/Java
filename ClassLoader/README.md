@@ -6,7 +6,7 @@
     * 由于操作系统出现错误而导致Java虚拟机
 
 #### 类的加载、连接 初始化
-* 加载：查找斌加载类的二进制数据
+* 加载：查找并加载类的二进制数据
 * 连接
     * 验证：确保被加载的类的正确性 
     * 准备：为类的**静态变量**分配内存，并将其初始化为**默认值**
@@ -109,3 +109,59 @@
     *  在初始化阶段，Java虚拟机执行类的初始化语句，为类的静态变量赋予**初始值**。在程序中，静态变量的初始化有两种途径:
         *  在静态变量的声明处进行初始化
         *  在静态代码块中进行初始化
+
+* 接下来看一个程序
+
+    ```java
+    class Singleton{
+        private static Singleton singleton = new Singleton();
+        public static int a;
+        public static int b = 0;
+        
+        private Singleton(){
+            a++;
+            b++;
+        }
+        
+        public static Singleton getInstance(){
+            reteurn singleton;
+        }
+    }
+    
+    public class MyTest{
+        public static void main(String[] args){
+            Singleton singleton = Singleton.getInstance();
+            System.out.pringln(singleton.a);
+            System.out.pringln(singleton.b);
+        }
+    }
+    
+    /*知道输出什么吗？往下看...*/
+    ```
+    * 分析以上程序,上面说了，加载一个类需要，**加载**，**连接**，**初始化**
+        * 加载
+            * 将`MyTest.class`中的二进制数据读到内存中
+        * 连接
+            * 验证
+            * 准备（为静态变量分配内存，并赋予其**默认值**）
+                * `Singleton singleton = null`
+                * `a = 0`
+                * `b = 0`
+                * 注意:以上的0为int类型的**默认值**，并非为a和b赋的值
+            * 解析
+        * 初始化（为类的静态变量赋予正确的**初始值**）
+            * 首先`Singleton singleton = new Singleton()`执行**构造方法**
+                * 此时 `a = 1`,`b = 1`
+            * 接着往下走a的值还是1 `a = 1`
+            * 再往下走是将0赋值给了b，所以b由之前的1变为了现在的0 `b = 0`
+    * 所以最后输出结果是：`a = 1`,`b = 0`
+    * 如果将`Singleton`类中变成了这样呢(只是换了下顺序，其他都不变)
+    
+        ```java
+        public static int a;
+        public static int b = 0;
+        private static Singleton singleton = new Singleton();
+        //...
+        ```
+      
+    * 相信根据上面的分析就能看出输出什么`a = 1`,`b = 1`
