@@ -21,12 +21,12 @@
 * 所有的Java虚拟机实现必须在每个类或接口被Java程序“**首次主动使用**”时才**初始化**他们
 * 主动使用（六种）
     * 创建类的实例
-    * 访问某个类或接口的静态变量，或者对该静态变量赋值
+    * 访问某个类或接口的静态**变量**，或者对该静态变量赋值
     * 调用类的静态方法
     * 反射（如：`Class.forName("com.lsl.test.Test")`）
     * 初始化一个类的子类
     * Java虚拟机启动时被标明为**启动类**的类
-* 除了以上六种情况以外，其他的全都是被动调用
+* 除了以上六种情况以外，其他的全都是**被动调用**，**不会导致类的初始化**
 * 类的加载是指将类的.class文件中的二进制数据读入到内存中，将其放在运行时数据区的方法区内，然后在堆区创建一个`java.lang.Class`对象，用来封装类在方法区内的数据结构，可以看出Class对象是由Java虚拟机创建的
 * 加载.Class文件的方式
     * 从本地系统中直接加载
@@ -165,3 +165,86 @@
         ```
       
     * 相信根据上面的分析就能看出输出什么`a = 1`,`b = 1`
+* 再看个程序
+
+    ```java
+    class FinalTest{
+        public static final int x = 6/3;
+        static {
+            System.out.println("FinalTest static block");
+        }
+    }
+    
+    public class Test{
+        public static void main(String[] args){
+            System.out.println(FinalTest.x);
+        }
+    }
+    //会输出什么呢
+    ```
+    
+    * 分析：
+        * `FinalTest`类中的`x = 6/3`这个`x`的值在编译器就能确定的值即**编译时的常量**，所以x可以看作是`FinalTest`类中的**静态常量**而非**静态变量**，访问`x`不会导致`FinalTest`类的初始化而static代码块也不会执行，只会输出`2`
+* 再来一个
+
+    ```java
+    class FinalTest{
+        public static final int x = new Random().nextInt(100);
+        static {
+            System.out.println("FinalTest static block");
+        }
+    }
+    
+    public class Test{
+        public static void main(String[] args){
+            System.out.println(FinalTest.x);
+        }
+    }
+    //又会输出什么呢
+    ```
+    * 分析这个和上面的类的区别只是在于`x`的赋值，区别就是这次`x`的值可以看作为**变量**而非常量，**而在访问`FinalTest`类的静态变量会导致类的初始化**初始化的时候，静态代码块就会执行所以输出如下：
+
+    ```java
+    FinalTest static block
+    47
+    ```
+* 继续
+
+    ```java
+    package com.lsl.test;
+    
+    class Parent{
+    	static int a = 3;
+    	static {
+    		System.out.println("parent static block");
+    	}
+    }
+    class Child extends Parent{
+    	static int b = 4;
+    	static{
+    		System.out.println("child static block");
+    	}
+    }
+    public class Test4 {
+    	static {
+    		System.out.println("Test4 static block");
+    	}
+    	public static void main(String[] args) {
+    		System.out.println(Child.b);
+    	}
+    }
+    //会输出什么呢
+    ```
+    
+    * 分析
+        * 可以看得出来`Test4`为启动类，所以会先被初始化
+        * 当执行到`Child.b`的时候，因为`b`为`Child`类中的静态变量，则回去初始化`Child`类
+        * 但是`Child`类继承自`Parent`类所以会先去初始化`Parent`类，然后在初始化`Child`类
+        * 所以输出就是
+
+        ```java
+        Test4 static block
+        parent static block
+        child static block
+        4
+        ```
