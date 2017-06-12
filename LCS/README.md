@@ -150,5 +150,8 @@
         }
     }
     ```
++ 参考
+    + http://www.hankcs.com/program/algorithm/implementation-and-application-of-nlp-longest-common-subsequence-longest-common-subsequence-of-java.html
+    + https://my.oschina.net/leejun2005/blog/117167
     
         
