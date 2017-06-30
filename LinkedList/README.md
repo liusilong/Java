@@ -1,0 +1,1 @@
+![](./images/LinkedList_1.8.png)
