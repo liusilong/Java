@@ -1,0 +1,125 @@
+Java8
+
+------------------------------------------函数式接口-------------------------------------------
+
+Lambda表达式的基本结构：
+	(param1,param2,param3) -> {
+		//执行体
+	}
+
+关于函数式接口：
+	1.如果一个接口只有一个抽象方法，那么该接口就是一个函数式接口。
+	2.如果哦们在某个接口上声明了FunctionalInterface注解，那么编译器就会按照函数式接口的定义来去要求这个接口
+	3.如果某个接口只有一个抽象方法，但我们并没有给该接口声明FunctionalInterface注解，那么编译器依旧会将该接口看做函数式接口
+
+创建函数式接口是实例的三种方法：
+	1.通过Lambda表达式创建
+	2.通过方法引用创建
+	3.通过构造方法引用创建
+
+函数：给定一个输入，得到一个输出
+
+Lambda表达式的作用：
+	1.传递行为，而不仅仅是传值（提升抽象层次、API重用性更好、更加灵活）
+
+Java Lambda 表达式的基本语法: 以 " -> " 来区分，左边表示参数，右边表示执行体
+	1.(arguement) -> { body }
+		比如：(arg1,arg2) -> { body }
+		完整：(Type1 arg1,Type2 arg2) -> { body }
+	2.示例：
+		(int a,int b) -> { a + b } //表示接受两个Int型参数，返回他们的和(Int型)
+		() -> System.out.println("Hello world") //无参函数，输出"Hello world"
+		(String s) -> System.out.println(s) //接受一个String类型的参数，并将其输出
+		() -> 47 //无参函数，返回47，"return"在函数体只有一句代码的情况下可以省略
+		() -> {return 3.14} // 无参函数，返回3.14
+
+Java Lambda 表达式结构
+	1.一个Lambda表达式可以有零个或者多个参数。
+	2.参数类型既可以明确声明，也可以根据上下文来推断。例如(int a) 和 (a) 效果一样
+	3.所有参数需包含在圆括号内，参数之间用逗号想个。例如:(a, b)或(int a, int b)或(String a, int b, float c)
+	4.空圆括号代表参数集为空。例如: () -> 47
+	5.当只有一个参数的时候，且其类型可以推导，圆括号 () 可以省略。例如: a -> a * a
+	6.Lambda表达式的主体可包含零条或者多条语句
+	7.如果Lambda表达式的主体只有一条语句，花括号 {} 可省略。匿名函数的返回类型与该主体表达式一致
+	8.如果Lambda表达式的主体包括一条以上的语句，则表达式必须包含在花括号 {} 中(形成代码块)。匿名函数的返回类型与代码块的返回类型一致，若没有返回则为空
+
+Java8 常用函数式接口
+	Consumer<T>
+		void accept(T t);
+	Function<T, R>
+		R apply(T t);
+	BiFunction<T, U, R>
+		R apply(T t, U u);
+	Predicate<T>
+		boolean test(T t);
+	BinaryOperator<T> extends BiFunction<T,T,T> //要求参数，返回值同类型
+		//因为他是继承 BiFunction的所以可以调用apply方法，如下
+		T apply(T t1,T t2);
+
+
+
+
+-------------------------------------------Optional-------------------------------------------------
+
+1.OPtional是通过工厂方法来获取的，不能通过new来获取
+	Optional<String> optional = Optional.of("Hello");//获取一个补位null的optional
+	取值 optional.get(),get()方法要和isPresent()方法一起使用
+	if(optional.isPresent()){
+		System.out.println(optional.get());
+	}
+	上面获取的方式为传统的方式，下面使用Lambda的方式来获取optional中的值
+	optional.ifPresent(value -> System.out.println(value);)
+	因为ifPresent(Consumer<? super T> consumer)接受一个Consumer的函数式接口，所以可以使用Lambda来实例化
+
+	还可以这样：如果 company.getList() 不为空则返回List，否则返回空List
+	 optional.map(company -> company.getList()).orElse(Collections.emptyList());
+
+
+-------------------------------------------方法引用(Method Reference)-------------------------------------------------
+
+方法引用实际上是 Lambda 表达式的一种语法糖
+我们可以将方法引用看做一个函数指针
+方法引用分为4类
+	1.类名::静态方法名
+	2.引用名(对象名)::实例方法名
+	3.类名::实例方法名
+	4.构造方法引用： 类名::new
+1.通常在遍历List的时候可以这样：
+	List<Integer> list = Arrays.asList(1,2,3,4,5,6); // 初始化List
+	// forEach(Consumer<? super T> action) 里面是一个Cunsumer函数式接口所有可以用 Lambda 去实例化
+	list.forEach(item -> System.println.out(item))
+
+	// 还有就是使用 方法引用
+	System.out.pringln(System.out::println)
+
+------------------------------------------------------------------
+
+Java8中接口引入默认方法(default method)的原因
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		
+			
+
+
